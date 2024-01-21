@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+      margin-top: 20px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 24px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+
+  <div id="board"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const board = document.getElementById('board');
+      const cells = Array.from({ length: 9 }, (_, index) => createCell(index));
+
+      cells.forEach(cell => board.appendChild(cell));
+
+      function createCell(index) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.index = index;
+        cell.addEventListener('click', handleCellClick);
+        return cell;
+      }
+
+      let currentPlayer = 'X';
+      let boardState = Array(9).fill('');
+
+      function handleCellClick(event) {
+        const clickedCell = event.target;
+        const cellIndex = clickedCell.dataset.index;
+
+        if (boardState[cellIndex] === '') {
+          boardState[cellIndex] = currentPlayer;
+          clickedCell.textContent = currentPlayer;
+
+          if (checkWinner()) {
+            alert(`${currentPlayer} wins!`);
+            resetGame();
+          } else if (boardState.every(cell => cell !== '')) {
+            alert('It\'s a draw!');
+            resetGame();
+          } else {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          }
+        }
+      }
+
+      function checkWinner() {
+        const winningCombinations = [
+          [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+          [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+          [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+
+        return winningCombinations.some(combination => {
+          const [a, b, c] = combination;
+          return boardState[a] !== '' && boardState[a] === boardState[b] && boardState[a] === boardState[c];
+        });
+      }
+
+      function resetGame() {
+        boardState = Array(9).fill('');
+        currentPlayer = 'X';
+        cells.forEach(cell => {
+          cell.textContent = '';
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
